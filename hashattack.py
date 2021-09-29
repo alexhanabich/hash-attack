@@ -3,6 +3,7 @@ import random
 import string
 import logging
 import matplotlib.pyplot as plt
+import csv
 
 def sha1_wrapper(str, num_bit):
     msg = hashlib.sha1()
@@ -72,34 +73,50 @@ def log_preimage_attack(num_bit):
 
 
 def log_attacks():
-    logging.basicConfig(filename='collision.log', level=logging.INFO)
+    logging.basicConfig(filename='hashattack.log', level=logging.INFO)
     plt.figure()
     plt.title('Collision Attacks')
     plt.xlabel('number of bits')
     plt.ylabel('number of attempts')
+    plt.yscale("log")
     x = [8, 10, 16, 20, 24]
     y = [pow(2, n/2) for n in x]
     plt.plot(x, y, label='expected')
-    y = []
+    z = []
     for num in x:
-        y.append(log_collision_attack(num))
-    plt.plot(x, y, label='actual')
+        z.append(log_collision_attack(num))
+    plt.plot(x, z, label='actual')
     plt.legend()
     plt.savefig('collision.png')
+    head = ['num bits', 'actual', 'expected']
+    row_list = zip(x, z, y)
+    with open('collision.csv', "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(head)
+        for row in row_list:
+            writer.writerow(row)
 
     plt.figure()
     plt.title('Preimage Attacks')
     plt.xlabel('number of bits')
     plt.ylabel('number of attempts')
-    x = [8, 10, 16]
+    plt.yscale("log")
+    x = [8, 10, 16, 20, 24]
     y = [pow(2, n) for n in x]
     plt.plot(x, y, label='expected')
-    y = []
+    z = []
     for num in x:
-        y.append(log_preimage_attack(num))
-    plt.plot(x, y, label='actual')
+        z.append(log_preimage_attack(num))
+    plt.plot(x, z, label='actual')
     plt.legend()
     plt.savefig('preimage.png')
+    head = ['num bits', 'actual', 'expected']
+    row_list = zip(x, z, y)
+    with open('preimage.csv', "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(head)
+        for row in row_list:
+            writer.writerow(row)
     
  
 log_attacks()
